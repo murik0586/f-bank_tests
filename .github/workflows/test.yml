@@ -1,0 +1,37 @@
+name: Selenium Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Install dependencies
+        run: |
+          pip install selenium pytest
+
+      - name: Start bank server
+        run: |
+          python -m http.server 8000 &
+          sleep 5
+
+      - name: Run Selenium tests
+        run: |
+          cd tests
+          pytest test_transfer.py -v
